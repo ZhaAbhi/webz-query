@@ -3,12 +3,14 @@ import { WebzResponse, WebzPost } from "../types/webzTypes";
 import { logger } from "../utils/logger";
 import { QueryBuilder } from "../utils/queryBuilder";
 import { savePostsToDb } from "./dbService";
+import { redisClient } from "../config/redis";
 
 export class WebzService {
   private readonly apiUrl: string;
   private readonly apiToken: string;
   private readonly apiBatchSize = 10;
   private readonly targetBatchSize = 200;
+  private readonly redisTtl = parseInt(process.env.REDIS_TTL || "3600", 10);
 
   constructor(apiUrl: string, apiToken: string) {
     this.apiUrl = apiUrl;
@@ -16,9 +18,20 @@ export class WebzService {
   }
 
   public async fetchAndSavePosts(queryBuilder: QueryBuilder, callback: (fetchedCount: number, totalCount: number) => void): Promise<void> {
+    const cacheKey = `webz:${queryBuilder.build(this.apiUrl, this.apiToken, this.apiBatchSize)}`;
+    const cachedData = await redisClient.get(cacheKey);
+
+    if (cachedData) {
+      logger.info(`Cache for key: ${cacheKey}`);
+      const { posts, totalResults } = JSON.parse(cachedData);
+      callback(posts.length, totalResults);
+      return;
+    }
+
     let totalSaved = 0;
     let nextUrl: string | undefined = undefined;
     let lastResponse: WebzResponse | undefined = undefined;
+    const allPosts: WebzPost[] = []; //store all fetched posts for caching
 
     do {
       const postsInBatch: WebzPost[] = [];
@@ -29,6 +42,7 @@ export class WebzService {
           const response = await this.fetchPosts(queryBuilder, batchNextUrl);
           postsInBatch.push(...response.posts);
           totalSaved += response.posts.length;
+          allPosts.push(...response.posts);
           lastResponse = response;
           batchNextUrl = response.moreResultsAvailable > 0 ? response.next : undefined;
           //TODO:
@@ -68,6 +82,9 @@ export class WebzService {
     } while (nextUrl);
 
     if (lastResponse) {
+      const cacheData = { posts: allPosts, totalResults: lastResponse.totalResults };
+      await redisClient.setEx(cacheKey, this.redisTtl, JSON.stringify(cacheData));
+      logger.info(`Cached results for key: ${cacheKey}`);
       callback(totalSaved, lastResponse.totalResults);
     } else {
       logger.warn("No successful responses received from Webz.io API");
