@@ -77,3 +77,17 @@ npm run test
 npm run test -- tests/utils/queryBuilder.test.ts
 ```
 
+## Future Improvements (TODOs)
+The following TODOs are directly from the codebase:
+
+- **API limits to 10 posts per request; fetching 200 requires 20 calls per batch.**
+- **Check `requestsLeft` and implement rate limiting (e.g., pause if < 20).**
+
+- **Offload batch fetching to a job queue (e.g: Bull) for large `totalResults`.**
+
+- **Implement rate limiting at the endpoint level (e.g., express-rate-limit).**
+
+- **Initialize a job server (e.g., BullMQ) to manage `fetchAndSavePosts` tasks in a queue.**
+
+### Additional Enhancements:
+- **Retry failed fetches with exponential backoff.**
