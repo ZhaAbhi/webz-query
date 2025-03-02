@@ -31,7 +31,8 @@ export class WebzService {
           totalSaved += response.posts.length;
           lastResponse = response;
           batchNextUrl = response.moreResultsAvailable > 0 ? response.next : undefined;
-
+          //TODO:
+          // Check requestLeft and implement rate limiting
           if (response.moreResultsAvailable === 0 || totalSaved >= response.totalResults) {
             break;
           }
@@ -57,6 +58,9 @@ export class WebzService {
 
       nextUrl = lastResponse && lastResponse.moreResultsAvailable > 0 ? lastResponse.next : undefined;
 
+      //TODO:
+      // Add a job queue for large totalResults (eg: Bull/rabbitmq/redis)
+
       if (totalSaved >= (lastResponse?.totalResults || 0) || !nextUrl) {
         logger.info("All posts fetched and saved (or no more available).");
         break;
@@ -69,6 +73,8 @@ export class WebzService {
       logger.warn("No successful responses received from Webz.io API");
       callback(totalSaved, 0);
     }
+    //TODO:
+    //API limits to 10 posts per request, fetching 200 requires 20 calls per batch
   }
 
   private async fetchPosts(queryBuilder: QueryBuilder, nextUrl?: string): Promise<WebzResponse> {

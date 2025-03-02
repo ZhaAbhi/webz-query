@@ -14,6 +14,8 @@ async function startServer() {
     app.express.listen(port, () => {
       logger.info(`Server running on port ${port}`);
     });
+    //TODO:
+    //Initialize job server to manage task in a queue
   } catch (error) {
     logger.error("Failed to start server", error);
     process.exit(1);

@@ -35,7 +35,8 @@ export class App {
             if (key && value) queryBuilder.addFilter(key, value);
           });
         }
-
+        //TODO:
+        //Implement rate limiting at the endpoint level
         await this.webzService.fetchAndSavePosts(queryBuilder, (fetchedCount, totalCount) => {
           res.json({
             fetchedCount,

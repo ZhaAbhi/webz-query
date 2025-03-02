@@ -19,7 +19,7 @@ export async function initDb(): Promise<void> {
       CREATE TABLE IF NOT EXISTS posts (
         id SERIAL PRIMARY KEY,
         title TEXT NOT NULL,
-        url TEXT NOT NULL UNIQUE,  -- Added UNIQUE constraint
+        url TEXT NOT NULL UNIQUE,
         published TIMESTAMP NOT NULL
       )
     `);
