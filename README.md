@@ -11,6 +11,10 @@ A Node.js application built with TypeScript to fetch posts from the Webz.io `new
 - Uses TypeScript with clean code principles and unit tests (Jest, no network/DB calls).
 - Configurable via environment variables with Docker Compose.
 
+## High level Architecture
+![webz-query-architecture](https://github.com/user-attachments/assets/48ff75dc-9e39-4181-820e-3e6bc78b3a41)
+
+
 ## Prerequisites
 - Node.js 18+
 - Docker and Docker Compose
