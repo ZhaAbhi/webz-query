@@ -23,7 +23,7 @@ A Node.js application built with TypeScript to fetch posts from the Webz.io `new
    cd webz-query
 
 2. **Install Dependencies**:
-   ```npm install
+   ```npm install```
 
 3. **Configure Environment Variables**:
    - Copy .env.example to .env and update with your values
