@@ -2,13 +2,14 @@ import * as dotenv from "dotenv";
 import { App } from "./app";
 import { initDb } from "./config/db";
 import { logger } from "./utils/logger";
+import { initRedis } from "./config/redis";
 
 dotenv.config();
 
 async function startServer() {
   try {
-    await initDb();
-    logger.info("Database initialized successfully");
+    await Promise.all([initDb(), initRedis()]);
+    logger.info("Database and Redis has been initialized successfully");
     const app = new App();
     const port = process.env.PORT || 3000;
     app.express.listen(port, () => {
