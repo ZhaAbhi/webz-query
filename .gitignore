@@ -1,2 +1,15 @@
-node_modules
+node_modules/
+npm-debug.log
+
+dist/
+*.tsbuildinfo
+
+.env
+
+pgdata/
+redisdata/
+
+app.log
+
+coverage/
 
