@@ -1,4 +1,4 @@
-# Webz API Connector
+# Webz Query
 
 A Node.js application built with TypeScript to fetch posts from the Webz.io `newsApiLite` endpoint, cache results in Redis, and store them in PostgreSQL.
 
@@ -16,73 +16,60 @@ A Node.js application built with TypeScript to fetch posts from the Webz.io `new
 - Docker and Docker Compose
 - A Webz.io API token
 
-
 ## Setup Instructions
-1. **Clone the Repository**:
-   ```bash
-   git clone git@github.com:ZhaAbhi/webz-query.git
-   cd webz-query
 
-2. **Install Dependencies**
+### 1. Clone the Repository
+```bash
+git clone git@github.com:ZhaAbhi/webz-query.git
+cd webz-query
+```
+
+### 2. Install Dependencies
+```bash
 npm install
+```
 
-3. **Configure Environment Variable**
-Create a `.env` file in the root directory and copy the variables from `.env.example` file and replace with actual values
-
+### 3. Configure Environment Variables
+Create a `.env` file in the root directory and copy the variables from `.env.example`, then replace them with actual values.
 
 ## Build the Project
+```bash
 npm run build
+```
 
 ## Run with Docker Compose
+```bash
 docker-compose up --build
-Access at http://localhost:3000.
+```
+Access the application at [http://localhost:3000](http://localhost:3000).
 
 ## Usage Instructions
-- Fetch Posts 
+
+### Fetch Posts
+```bash
 curl "http://localhost:3000/fetch-posts?query=Bitcoin"
+```
 
-- Default("technology")
+### Default Query ("technology")
+```bash
 curl "http://localhost:3000/fetch-posts"
+```
 
-- Check Health
+### Check Health
+```bash
 curl "http://localhost:3000/health"
+```
 
 ## Running Tests
-- Unit tests mock all external dependencies
-1. Run All Tests
+- Unit tests mock all external dependencies.
+
+### Run All Tests
+```bash
 npm run test
-2. Run Specific Test
+```
+
+### Run Specific Test
+```bash
 npm run test -- tests/utils/queryBuilder.test.ts
+```
 
-## Architecture
-graph TD
-    A[Client<br/>(User/Browser)] -->|HTTP GET /fetch-posts| B[Express.js Server<br/>(API Layer)]
-
-    subgraph Application
-        B -->|Routes| C[Middleware<br/>(Validation)]
-        C -->|Validated Request| D[WebzService<br/>(Service Layer)]
-        
-        subgraph Services
-            D -->|Fetch Data| E[Webz.io API<br/>(Mocked in Tests)]
-            D -->|Cache Check/Update| F[Redis<br/>(Mocked in Tests)]
-            D -->|Store Posts| G[PostgreSQL<br/>(Mocked in Tests)]
-        end
-
-        subgraph Utilities
-            D --> H[QueryBuilder]
-            B --> I[Logger<br/>(Winston)]
-        end
-    end
-
-    E -->|Returns Posts| D
-    F -->|Cache Hit/Miss| D
-    G -->|Save Confirmation| D
-    D -->|Response Callback| B
-    B -->|HTTP Response| A
-
-    classDef external fill:#f9f,stroke:#333,stroke-width:2px;
-    class E,F,G external;
-    classDef app fill:#bbf,stroke:#333,stroke-width:2px;
-    class B,C,D,H,I app;
-    classDef client fill:#dfd,stroke:#333,stroke-width:2px;
-    class A client;
