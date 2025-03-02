@@ -1,5 +1,6 @@
 import { Pool } from "pg";
 import * as dotenv from "dotenv";
+import { logger } from "../utils/logger";
 
 dotenv.config();
 
@@ -15,16 +16,17 @@ export async function initDb(): Promise<void> {
   const client = await dbPool.connect();
   try {
     await client.query(`
-            CREATE TABLE IF NOT EXISTS posts(
-            id SERIAL PRIMARY KEY,
-            title TEXT NOT NULL,
-            url TEXT NOT NULL,
-            published TIMESTAMP NOT NULL
-            )
-            `);
-  } catch (error) {
-    console.error("Error initializing database", error);
-    throw error;
+      CREATE TABLE IF NOT EXISTS posts (
+        id SERIAL PRIMARY KEY,
+        title TEXT NOT NULL,
+        url TEXT NOT NULL UNIQUE,  -- Added UNIQUE constraint
+        published TIMESTAMP NOT NULL
+      )
+    `);
+    logger.info("Posts table initialized with UNIQUE constraint on url");
+  } catch (err) {
+    logger.error("Error initializing database:", err);
+    throw err;
   } finally {
     client.release();
   }
