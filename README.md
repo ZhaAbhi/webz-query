@@ -14,7 +14,7 @@ A Node.js application built with TypeScript to fetch posts from the Webz.io `new
 ## Prerequisites
 - Node.js 18+
 - Docker and Docker Compose
-- A Webz.io API token (e.g., provided as `3eb4d06f-315a-4481-b357-616444fc4e73`)
+- A Webz.io API token
 
 ## Setup
 1. **Clone the Repository**:
